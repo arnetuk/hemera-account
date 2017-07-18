@@ -1,0 +1,34 @@
+{
+  "name": "hemera-user",
+  "version": "0.0.0",
+  "description": "This is your hemera plugin",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard --fix index.js",
+    "test": "nyc mocha -t 5000 ./test/**/*.js",
+    "coverage": "npm run test && nyc report --reporter=html"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "hemera-plugin": "^0.0.2",
+    "hemera-joi": "1.x"
+  },
+  "peerDependencies": {
+    "nats-hemera": "1.x || 2.x"
+  },
+  "devDependencies": {
+    "code": "4.0.x",
+    "hemera-testsuite": "1.x",
+    "istanbul": "0.4.x",
+    "mocha": "3.2.x",
+    "mocha-lcov-reporter": "1.2.x",
+    "nyc": "10.3.x",
+    "nats-hemera": "1.x",
+    "nats": "0.7.x",
+    "standard": "^10.0.2"
+  }
+}
