@@ -1,5 +1,5 @@
 {
-  "name": "hemera-user",
+  "name": "hemera-account",
   "version": "0.0.0",
   "description": "This is your hemera plugin",
   "main": "index.js",
@@ -14,8 +14,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "crypto": "0.0.3",
+    "hemera-joi": "1.x",
+    "hemera-jwt-auth": "^1.1.13",
+    "hemera-mongo-store": "^1.0.23",
     "hemera-plugin": "^0.0.2",
-    "hemera-joi": "1.x"
+    "jsonwebtoken": "^7.4.1"
   },
   "peerDependencies": {
     "nats-hemera": "1.x || 2.x"
