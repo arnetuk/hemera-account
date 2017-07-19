@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "crypto": "0.0.3",
+    "deep-extend": "^0.5.0",
     "hemera-joi": "1.x",
     "hemera-jwt-auth": "^1.1.13",
     "hemera-mongo-store": "^1.0.23",

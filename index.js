@@ -2,13 +2,9 @@
 
 const Hp = require('hemera-plugin');
 const _ = require('lodash');
-var jwt = require('jsonwebtoken');
 const Crypto = require('crypto');
-
+const jwt = require('jsonwebtoken');
 // const hemeraJwt = require('hemera-jwt-auth')
-const hemeraMongoo = require('hemera-mongo-store');
-
-
 
 exports.plugin = Hp(function hemeraAccount (options, next) {
   const hemera = this;
@@ -18,79 +14,89 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
   // get default options from file
   var default_options = require('./default-options.json')
   // extend default option by plugin option
-  options = _.extend(default_options, options);
-  const topic = options.name;
+  options = _.merge(default_options, options);
 
-  /**
-   * Login to account
-   * @param  {JSON}   email, password, rememberme   If rememberme == 1 then expiry time will set to 01-01-2100
-   * @return {JSON}   token                         Return token with expiry time hashed
-   */
-  hemera.add({
-    topic,
-    cmd: 'login'
-  }, (req, cb) => {
+  for (var key in options.entities) {
+    // var entity = options.entities[i];
+    // console.log('ENT (', key, '): ', entityOptions);
+    console.log('Creating entity: ' + key);
+    /**
+     * Login to account
+     * @param  {JSON}   email, password, rememberme   If rememberme == 1 then expiry time will set to 01-01-2100
+     * @return {JSON}   token                         Return token with expiry time hashed
+     */
+    hemera.add({
+      topic: key,
+      cmd: 'login'
+    }, (req, cb) => {
 
-    // get login OR mail
-    var email = req.email;
-    // get password
-    var password = req.password;
-    // checking if email and password exists
-    if (!email || !password) {
-      const missingError = new UnauthorizedError("Missing email or password")
-      missingError.statusCode = 401;
-      cb(missingError, null);
-    }
-    // hash password
-    hashPassword(options.pepper, options.salt, password, (err, result) => {
-
-      if (result.ok) {
-        // find account in collection in MongoDB
-        hemera.act({
-          topic: 'mongo-store',
-          cmd: 'find',
-          collection: options.name,
-          query: {email: email, password: result.pass}
-        }, function(err, resp) {
-
-          // checking if we get any account
-          if (resp.result.length > 0) { 
-            // we have account
-            var expiry = new Date();
-            // check if is rememberme is set
-            if (req.rememberme && req.rememberme == true) {
-              expiry.setFullYear(2099);
-            } else {
-              expiry.setDate(expiry.getDate() + 1);
-            }
-            expiry = Math.round(expiry.getTime() / 1000);
-
-            // generate token with expiry
-            var token = jwt.sign(
-              { 
-                exp: expiry.toString(),
-                account: hide(resp.result[0], options.login.fields)
-              }, options.secret);
-
-            // push response
-            cb(null, {token: token});
-            
-          } else { // not authorized
-            cb(errorUnauthorized, null);
-          }
-
-        });
-        
-      } else {
-        // bad hash password
-        cb(err, null); 
+      var entityOptions = options.entities[req.topic];
+      // get login OR mail
+      var email = req.email;
+      // get password
+      var password = req.password;
+      // checking if email and password exists
+      if (!email || !password) {
+        const missingError = new UnauthorizedError("Missing email or password")
+        missingError.statusCode = 401;
+        cb(missingError, null);
       }
+      // hash password
+      hashPassword(entityOptions.pepper, entityOptions.salt, password, (err, result) => {
 
-    })
+        console.log(email, password, result.pass);
+        console.log(req.topic);
+        if (result.ok) {
+          // find account in collection in MongoDB
+          hemera.act({
+            topic: 'mongo-store',
+            cmd: 'find',
+            collection: req.topic,
+            query: {email: email, password: result.pass}
+          }, function(err, resp) {
+
+            console.log(resp);
+            // checking if we get any account
+            if (resp.result.length > 0) { 
+              // we have account
+              var expiry = new Date();
+              // check if is rememberme is set
+              if (req.rememberme && req.rememberme == true) {
+                expiry.setFullYear(2099);
+              } else {
+                expiry.setDate(expiry.getDate() + 1);
+              }
+              expiry = Math.round(expiry.getTime() / 1000);
+
+              // generate token with expiry
+              var token = jwt.sign(
+                { 
+                  exp: expiry.toString(),
+                  account: hide(resp.result[0], entityOptions.login.fields)
+                }, entityOptions.secret);
+
+              // push response
+              cb(null, {token: token});
+              
+            } else { // not authorized
+              cb(errorUnauthorized, null);
+            }
+
+          });
+          
+        } else {
+          // bad hash password
+          cb(err, null); 
+        }
+
+      })
 
 
 
-  })
+    });
+
+    // end for entities loop
+  }
 
   next()
 })
@@ -139,9 +145,9 @@ function hasher (src, rounds, done) {
  */
 function hide (args, propnames) {
   var outargs = _.extend({}, args)
-  for (var pn of propnames) {
-    if (pn.hide) {
-      outargs[pn.name] = '[HIDDEN]'
+  for (var pn in propnames) {
+    if (propnames[pn].hide) {
+      outargs[pn] = '[HIDDEN]'
     }
   }
   return outargs
