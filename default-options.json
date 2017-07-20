@@ -1,17 +1,16 @@
 {
-	"version" : 123,
-	"entities": {
-		"users": {
-			"salt": "!99pcjyOU3@I$l",
-			"pepper": "",
-			"secret": "yV4F#p9g%78DxE",
-			"login": {
-				"fields": {
-					"password" :{
-						"hide" : true
-					}
-				}
+	"version" : 1,
+	"role" : "user",
+	"collection": "users",
+	"salt": "!99pcjyOU3@I$l",
+	"pepper": "",
+	"secret": "yV4F#p9g%78DxE",	
+	"login": {
+		"fields": [
+			{
+				"name" : "password",
+				"hide" : true
 			}
-		}
+		]
 	}
 }
