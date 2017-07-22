@@ -1,6 +1,6 @@
 # hemera-user
 
-Your plugin description
+Hemera user plugin that uses jwt as the authentication mechanism
 
 # Prerequisites
 
@@ -12,42 +12,18 @@ Your plugin description
 'use strict'
 
 const Hemera = require('nats-hemera')
-const Plugin = require('hemera-user')
+const HemeraAccount = require('hemera-account')
 const nats = require('nats').connect()
 
 const hemera = new Hemera(nats, {
   logLevel: 'info'
 })
 
-hemera.use(Plugin)
-
-hemera.ready(() => {
-  hemera.act({
-    topic: 'user',
-    cmd: 'add',
-    a: 1,
-    b: 2
-  }, function (err, resp) {
-    this.log.info(resp, 'Result')
-  })
+hemera.use(HemeraAccount, {
+  role: "client",
+  store: "mongo-store",
+  collection: "users"
 })
 
-```
-
-# Test
-
-```
-npm run test
-```
-
-# Code coverage
-
-```
-npm run coverage
-```
-
-# Linting
-
-```
-npm run lint
+hemera.ready({})
 ```

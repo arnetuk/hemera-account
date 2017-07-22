@@ -17,23 +17,25 @@
     "crypto": "0.0.3",
     "deep-extend": "^0.5.0",
     "hemera-joi": "1.x",
-    "hemera-jwt-auth": "^1.1.13",
     "hemera-mongo-store": "^1.0.23",
     "hemera-plugin": "^0.0.2",
-    "jsonwebtoken": "^7.4.1"
+    "jsonwebtoken": "^7.4.1",
+    "lodash": "^4.17.4"
   },
   "peerDependencies": {
     "nats-hemera": "1.x || 2.x"
   },
   "devDependencies": {
     "code": "4.0.x",
+    "events": "^1.1.1",
     "hemera-testsuite": "1.x",
     "istanbul": "0.4.x",
+    "jsdoc": "^3.5.3",
     "mocha": "3.2.x",
     "mocha-lcov-reporter": "1.2.x",
-    "nyc": "10.3.x",
-    "nats-hemera": "1.x",
     "nats": "0.7.x",
+    "nats-hemera": "1.x",
+    "nyc": "10.3.x",
     "standard": "^10.0.2"
   }
 }
