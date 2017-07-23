@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "standard --fix index.js",
     "test": "nyc mocha -t 5000 ./test/**/*.js",
-    "coverage": "npm run test && nyc report --reporter=html"
+    "coverage": "npm run test && nyc report --reporter=html",
+    "doc": "jsdoc -c ./jsdoc.json *.js"
   },
   "engines": {
     "node": ">=4.0.0"
