@@ -1,16 +1,19 @@
 const Crypto = require('crypto');
 const _ = require('lodash');
 
-module.exports.hashPassword = hashPassword;
 module.exports.hasher = hasher;
 module.exports.hide = hide;
+module.exports.conditionalExtend = conditionalExtend;
 
-function hashPassword(pepper, salt, password, done) {
-  hasher(pepper + password + salt, 11111, function (pass) {
-    done(null, {ok: true, pass: pass, salt: salt});
-  });
+
+function conditionalExtend (user, args, options) {
+  var extra = _.omit(args, options.update.omit)
+  _.map(extra, function (val, key) {
+    if (!key.match(/\$/)) {
+      user[key] = val
+    }
+  })
 }
-
 
 /**
  * Hash password with sha256

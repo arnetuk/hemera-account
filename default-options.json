@@ -1,10 +1,13 @@
 {
 	"version" : 1,
 	"role" : "user",
+	"store" : "mongo-store",
 	"collection": "users",
 	"salt": "!99pcjyOU3@I$l",
 	"pepper": "",
-	"secret": "yV4F#p9g%78DxE",	
+	"secret": "yV4F#p9g%78DxE",
+	"passes": 10,
+	"autopass" : false,
 	"login": {
 		"fields": [
 			{
@@ -12,5 +15,8 @@
 				"hide" : true
 			}
 		]
+	},
+	"update" : {
+		"omit" : ["forceCreated", "repeat"]
 	}
 }
