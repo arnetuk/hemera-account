@@ -204,7 +204,6 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         return hashPassword(args, done)
     }
 
-
     function saveuser(args, done) {
         preparePassword(args, function(err, res) {
             hemera.log.info('Saving user ' + args.email)
@@ -287,8 +286,6 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
             token: token
         })
     }
-
-
 
     function hashPassword(args, done) {
         // 128 bits of salt
