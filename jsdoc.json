@@ -1,3 +1,11 @@
 {
-    "plugins": ["plugins/markdown"]
+    "title": "Custom Title",
+    "plugins": ["plugins/markdown"],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": true
+    },
+    "source": {
+        "include": ["README.md"]
+    }
 }

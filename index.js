@@ -79,6 +79,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * Example: `{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"}`
      */
     login = function(args, done) {
+        var hemera  = this
         hemera.log.debug('login')
 
         var email = args.email
@@ -115,6 +116,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function prepareUser(args, done) {
+        var hemera  = this
         hemera.log.debug('Preparing user')
         var user = {}
         user.username = args.username || args.email
@@ -144,6 +146,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * @return {object} Email via callback
      */
      checkEmail = function(args, done) {
+        var hemera  = this
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
@@ -165,6 +168,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function preparePassword(args, done) {
+        var hemera  = this
         hemera.log.debug('Preparing password')
 
         var password = void 0 === args.password ? args.pass : args.password
@@ -205,6 +209,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function saveuser(args, done) {
+        var hemera  = this
         preparePassword(args, function(err, res) {
             hemera.log.info('Saving user ' + args.email)
             if (err) return done(err, null)
@@ -221,6 +226,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function verifyPassword(args, done) {
+        var hemera  = this
         hashPassword(args, function(err, res) {
             if (err) return done(err)
 
@@ -235,6 +241,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function resolveUser(args, done) {
+        var hemera  = this
         var credentials = {
             email: args.email
         }
@@ -265,6 +272,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function generateToken(args, done) {
+        var hemera  = this
         var expiry = new Date()
 
         // check if is rememberme is set
@@ -288,6 +296,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function hashPassword(args, done) {
+        var hemera  = this
         // 128 bits of salt
         var salt = args.salt || createSalt()
         var password = args.password
