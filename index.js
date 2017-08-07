@@ -12,6 +12,7 @@ const Uuid = require('node-uuid')
  * @module account
  */
 exports.plugin = Hp(function hemeraAccount(options, next) {
+
     const hemera = this
     const UnauthorizedError = hemera.createError('Unauthorized')
     const BadRequest = hemera.createError('BadRequest')
@@ -57,6 +58,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"id": "6127389AFC981"}`
      */
+
     function register(args, done) {
         checkEmail(args, function(err, res) {
             if (err) return done(err)
@@ -78,7 +80,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"}`
      */
+
     function login(args, done) {
+        var hemera = this;
+
         hemera.log.debug('login')
 
         var email = args.email
@@ -143,7 +148,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * @return {object} Error via callback
      * @return {object} Email via callback
      */
+
     function checkEmail(args, done) {
+
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
