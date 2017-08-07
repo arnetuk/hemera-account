@@ -57,7 +57,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"id": "6127389AFC981"}`
      */
-     register = function(args, done) {
+    function register(args, done) {
         checkEmail(args, function(err, res) {
             if (err) return done(err)
             prepareUser(args, function(err, res) {
@@ -78,7 +78,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"}`
      */
-    login = function(args, done) {
+    function login(args, done) {
         hemera.log.debug('login')
 
         var email = args.email
@@ -143,7 +143,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * @return {object} Error via callback
      * @return {object} Email via callback
      */
-     checkEmail = function(args, done) {
+    function checkEmail(args, done) {
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
@@ -274,7 +274,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
             expiry.setDate(expiry.getDate() + 1)
         }
 
-        expiry = Math.round(expiry.getTime() / 1000)
+        expiry = Math.round(expiry.getTime() / 1)
 
         // generate token with expiry
         var token = jwt.sign({
