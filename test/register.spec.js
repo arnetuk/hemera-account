@@ -28,7 +28,7 @@ describe('hemera-account', function() {
     it('Register should create new user', function(done) {
         const nats = new Nats()
         const hemera = new Hemera(nats, {
-            logLevel: 'fatal'
+            logLevel: 'debug'
         })
         const actStub = new ActStub(hemera)
 
@@ -57,8 +57,10 @@ describe('hemera-account', function() {
               created: '2017-07-23T15:30:18.690Z',
               failedLoginCount: 0,
               confirmed: false,
+              scope: [],
               confirmcode: '74g7spbReQtpphCC',
               salt: 'testsalt' }
+
 
             // example answer from mongo after creating the user
             actStub.stub({
@@ -83,6 +85,7 @@ describe('hemera-account', function() {
                 repeat: "123",
                 salt: "testsalt",
                 forceCreated: true,
+                scope: [],
                 created: '2017-07-23T15:30:18.690Z',
                 confirmcode: "74g7spbReQtpphCC"
             }, function(err, result) {

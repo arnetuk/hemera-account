@@ -6,7 +6,7 @@ const Crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const utils = require('./utils.js')
 const Uuid = require('node-uuid')
-
+const moment = require('moment')
 /**
  * Accounts plugin for hemera
  * @module account
@@ -63,7 +63,8 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"id": "6127389AFC981"}`
      */
-     function register(args, done) {
+
+    function register(args, done) {
         checkEmail(args, function(err, res) {
             if (err) return done(err)
             prepareUser(args, function(err, res) {
@@ -84,8 +85,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      *
      * Example: `{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"}`
      */
-     function login(args, done) {
+
+    function login(args, done) {
         var hemera = this;
+
         hemera.log.debug('login')
 
         var email = args.email
@@ -102,6 +105,8 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         // resolve the user first by email or username if provided
         resolveUser(args, function(err, res) {
             if (err) return done(err, null)
+            // add response to args
+            args = _.defaultsDeep(args, res)
 
             // add salt so that we can veryfy the password, add retrieved password
             args.salt = args.salt || res.salt
@@ -151,7 +156,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         user.repeat = args.repeat
         user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled
         user.failedLoginCount = 0
-
+        user.scope = args.scope
         if (options.confirm) {
             user.confirmed = args.confirmed || false
             user.confirmcode = args.confirmcode === '74g7spbReQtpphCC' ? '74g7spbReQtpphCC' : Uuid() // static confirm code for tests
@@ -169,7 +174,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * @return {object} Error via callback
      * @return {object} Email via callback
      */
-     function checkEmail(args, done) {
+
+    function checkEmail(args, done) {
+
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
@@ -234,13 +241,18 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         preparePassword(args, function(err, res) {
             hemera.log.info('Saving user ' + args.email)
             if (err) return done(err, null)
+            delete res.topic
+            delete res.cmd
 
-            hemera.act({
+            let params = {
                 topic: options.store,
                 cmd: 'create',
                 collection: options.collection,
                 data: res
-            }, function(err, user) {
+            }
+            console.log(params);
+
+            hemera.act(params, function(err, user) {
                 return done(err, user)
             })
         })
@@ -291,20 +303,11 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
     function generateToken(args, done) {
-        var expiry = new Date()
-
-        // check if is rememberme is set
-        if (args.rememberme && args.rememberme === true) {
-            expiry.setFullYear(2099)
-        } else {
-            expiry.setDate(expiry.getDate() + 1)
-        }
-
-        expiry = Math.round(expiry.getTime() / 1000)
-
+        delete args.topic
+        delete args.cmd
         // generate token with expiry
         var token = jwt.sign({
-            exp: expiry.toString(),
+            exp: moment().add(options.expiry.value,options.expiry.unit).valueOf(),
             account: utils.hide(args, options.login.fields),
             id: args._id,
             role: options.role

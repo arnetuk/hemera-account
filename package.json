@@ -22,6 +22,7 @@
     "hemera-plugin": "^0.0.2",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "node-uuid": "^1.4.8"
   },
   "peerDependencies": {

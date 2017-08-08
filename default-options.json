@@ -8,10 +8,26 @@
 	"secret": "yV4F#p9g%78DxE",
 	"passes": 10,
 	"autopass" : false,
+	"expiry":{
+		"unit" : "days",
+		"value" : 5
+	},
 	"login": {
 		"fields": [
 			{
 				"name" : "password",
+				"hide" : true
+			},
+			{
+				"name" : "salt",
+				"hide" : true
+			},
+			{
+				"name" : "compareWith",
+				"hide" : true
+			},
+			{
+				"name" : "confirmed",
 				"hide" : true
 			}
 		]
