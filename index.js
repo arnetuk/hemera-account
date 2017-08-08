@@ -1,6 +1,6 @@
 'use strict'
 
-let JWTSECRET_SERVICE = process.env.JWTSECRET_SERVICE || 'yV4F#p9g%78DxE'
+let JWTSECRET = process.env.JWTSECRET || 'test'
 
 const Hp = require('hemera-plugin')
 const _ = require('lodash')
@@ -306,12 +306,15 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     delete args.topic
     delete args.cmd
         // generate token with expiry
-    var token = jwt.sign({
-      exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
-      account: utils.hide(args, options.login.fields),
-      id: args._id,
-      role: options.role
-  }, JWTSECRET_SERVICE)
+
+    let params = {
+          exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
+          id: args._id,
+          role: options.role
+    }
+
+    params = _.defaultsDeep(params,  utils.hide(args, options.login.fields))
+    var token = jwt.sign(params, JWTSECRET)
 
     done(null, {
       token: token
