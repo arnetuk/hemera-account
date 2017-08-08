@@ -100,6 +100,8 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         // resolve the user first by email or username if provided
         resolveUser(args, function(err, res) {
             if (err) return done(err, null)
+            // add response to args
+            args = _.defaultsDeep(args, res)
 
             // add salt so that we can veryfy the password, add retrieved password
             args.salt = args.salt || res.salt
@@ -130,7 +132,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         user.repeat = args.repeat
         user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled
         user.failedLoginCount = 0
-
+        user.scope = ['freshdesk_create_ticket']
         if (options.confirm) {
             user.confirmed = args.confirmed || false
             user.confirmcode = args.confirmcode === '74g7spbReQtpphCC' ? '74g7spbReQtpphCC' : Uuid() // static confirm code for tests
@@ -215,7 +217,8 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         preparePassword(args, function(err, res) {
             hemera.log.info('Saving user ' + args.email)
             if (err) return done(err, null)
-
+            delete res.topic
+            delete res.cmd
             hemera.act({
                 topic: options.store,
                 cmd: 'create',
@@ -281,8 +284,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
             expiry.setDate(expiry.getDate() + 1)
         }
 
-        expiry = Math.round(expiry.getTime() / 1)
+        expiry = Math.round(expiry.getTime() / 1000)
 
+        delete args.topic
+        delete args.cmd
         // generate token with expiry
         var token = jwt.sign({
             exp: expiry.toString(),
