@@ -1,5 +1,5 @@
 {
-  "name": "hemera-account",
+  "name": "hemera-account-plugin",
   "version": "0.0.0",
   "description": "This is your hemera plugin",
   "main": "index.js",
