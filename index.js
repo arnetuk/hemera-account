@@ -1,5 +1,7 @@
 'use strict'
 
+let JWTSECRET_SERVICE = process.env.JWTSECRET_SERVICE || 'yV4F#p9g%78DxE'
+
 const Hp = require('hemera-plugin')
 const _ = require('lodash')
 const Crypto = require('crypto')
@@ -309,7 +311,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
       account: utils.hide(args, options.login.fields),
       id: args._id,
       role: options.role
-    }, options.secret)
+  }, JWTSECRET_SERVICE)
 
     done(null, {
       token: token

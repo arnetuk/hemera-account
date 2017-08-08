@@ -5,7 +5,6 @@
 	"collection": "users",
 	"salt": "!99pcjyOU3@I$l",
 	"pepper": "",
-	"secret": "yV4F#p9g%78DxE",
 	"passes": 10,
 	"autopass" : false,
 	"expiry":{
