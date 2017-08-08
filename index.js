@@ -305,7 +305,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         // generate token with expiry
         var token = jwt.sign({
             exp: expiry.toString(),
-            account: utils.hide(args, options.login.fields)
+            account: utils.hide(args, options.login.fields),
+            id: args._id,
+            role: options.role
         }, options.secret)
 
         done(null, {
