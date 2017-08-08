@@ -58,6 +58,7 @@ describe('hemera-account', function() {
               failedLoginCount: 0,
               confirmed: false,
               scope: [],
+              group: [],
               confirmcode: '74g7spbReQtpphCC',
               salt: 'testsalt' }
 
@@ -86,6 +87,7 @@ describe('hemera-account', function() {
                 salt: "testsalt",
                 forceCreated: true,
                 scope: [],
+                group: [],
                 created: '2017-07-23T15:30:18.690Z',
                 confirmcode: "74g7spbReQtpphCC"
             }, function(err, result) {
