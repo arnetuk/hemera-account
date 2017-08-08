@@ -41,6 +41,11 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         cmd: 'register'
     }, register)
 
+    hemera.add({
+        topic: options.role,
+        cmd: 'update'
+    }, update)
+
     /**
      * Register a new user
      * @param {object} args - Arguments
@@ -114,6 +119,25 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         })
 
         hemera.log.debug('email and password ok : ' + email)
+    }
+
+    function update(args, done) {
+
+        //@todo
+        var hemera = this
+        hemera.log.debug("Updating user")
+
+        hemera.act({
+            topic: options.store,
+            cmd: 'updateById',
+            collection: options.collection,
+            id: args.id,
+            data: {$set : {name2: "test2"}}
+        }, function(err, user) {
+            if (err) return done(err, null)
+
+            return done(null, user)
+        })
     }
 
     function prepareUser(args, done) {
