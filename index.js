@@ -250,7 +250,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         collection: options.collection,
         data: res
       }
-      console.log(params)
 
       hemera.act(params, function (err, user) {
         return done(err, user)
@@ -310,7 +309,8 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     let params = {
           exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
           id: args._id,
-          role: options.role
+          role: options.role,
+          roles: ['*'] // @todo remove that after switch to hemera ONLY
     }
 
     params = _.defaultsDeep(params,  utils.hide(args, options.login.fields))
