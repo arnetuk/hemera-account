@@ -1,37 +1,36 @@
 {
-	"version" : 1,
-	"role" : "user",
-	"store" : "mongo-store",
-	"collection": "users",
-	"salt": "!99pcjyOU3@I$l",
-	"pepper": "",
-	"passes": 10,
-	"autopass" : false,
-	"expiry":{
-		"unit" : "days",
-		"value" : 5
-	},
-	"login": {
-		"fields": [
-			{
-				"name" : "password",
-				"hide" : true
-			},
-			{
-				"name" : "salt",
-				"hide" : true
-			},
-			{
-				"name" : "compareWith",
-				"hide" : true
-			},
-			{
-				"name" : "confirmed",
-				"hide" : true
-			}
-		]
-	},
-	"update" : {
-		"omit" : ["forceCreated", "repeat"]
-	}
+    "version": 1,
+    "role": "user",
+    "store": "mongo-store",
+    "collection": "users",
+    "salt": "!99pcjyOU3@I$l",
+    "pepper": "",
+    "passes": 10,
+    "autopass": false,
+    "expiry": {
+        "unit": "days",
+        "value": 5
+    },
+    "login": {
+        "fields": [{
+                "name": "password",
+                "hide": true
+            },
+            {
+                "name": "salt",
+                "hide": true
+            },
+            {
+                "name": "compareWith",
+                "hide": true
+            },
+            {
+                "name": "confirmed",
+                "hide": true
+            }
+        ]
+    },
+    "update": {
+        "omit": ["topic", "cmd", "forceCreated", "repeat", "confirmed", "compareWith", "role", "cmd", "nick", "email", "name", "active", "username", "password", "salt", "pass", "id", "confirmed", "confirmcode"]
+    }
 }
