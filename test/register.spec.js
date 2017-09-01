@@ -53,7 +53,7 @@ describe('hemera-account', function() {
               name: '',
               repeat: '123',
               active: true,
-              password: 'c96a1adccaff212e953d248e1e77dfed7673153f5f496cef672009eba81b77a6',
+              password: '9c001a59509e353f104de648fc5ed3211b56dfdeb7d8b3d3ce9fbe609d4572bb',
               created: '2017-07-23T15:30:18.690Z',
               failedLoginCount: 0,
               confirmed: false,
@@ -61,7 +61,6 @@ describe('hemera-account', function() {
               group: [],
               confirmcode: '74g7spbReQtpphCC',
               salt: 'testsalt' }
-
 
             // example answer from mongo after creating the user
             actStub.stub({

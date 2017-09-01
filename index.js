@@ -44,8 +44,19 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
 
   hemera.add({
     topic: options.role,
-    cmd: 'update'
+    cmd: 'update',
+    auth$: {
+      scope: [options.role + '_update']
+    }
   }, update)
+
+  hemera.add({
+    topic: options.role,
+    cmd: 'profile',
+    auth$: {
+      scope: [options.role + '_profile']
+    }
+  }, profile)
 
     /**
      * Register a new user
@@ -130,18 +141,51 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
   function update (args, done) {
         // @todo
     var hemera = this
-    hemera.log.debug('Updating user')
+    hemera.log.info('Updating user')
+
+    let decoded = this.auth$
+    if (_.isUndefined(decoded.id)) {
+      var err = new BadRequest('Missing user id')
+      err.statusCode = 400
+      err.code = 'user-id'
+      return done(err, null)
+    }
+
+    let id = decoded.id
+
+    let params = _.omit(args, options.update.omit)
 
     hemera.act({
       topic: options.store,
       cmd: 'updateById',
       collection: options.collection,
-      id: args.id,
-      data: {$set: {name2: 'test2'}}
-    }, function (err, user) {
+      id: id,
+      data: {
+        $set: params
+      }
+    }, function (err, res) {
       if (err) return done(err, null)
+      return done(null, utils.hide(res, options.login.fields))
+    })
+  }
 
-      return done(null, user)
+  function profile (args, done) {
+    let decoded = this.auth$
+    if (_.isUndefined(decoded.id)) {
+      var err = new BadRequest('Missing user id')
+      err.statusCode = 400
+      err.code = 'user-id'
+      return done(err, null)
+    }
+
+    hemera.act({
+      topic: options.store,
+      cmd: 'findById',
+      collection: options.collection,
+      id: decoded.id
+    }, function (err, res) {
+      if (err) return done(err, null)
+      return done(null, utils.hide(res, options.login.fields))
     })
   }
 
@@ -307,13 +351,12 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         // generate token with expiry
 
     let params = {
-          exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
-          id: args._id,
-          role: options.role,
-          roles: ['*'] // @todo remove that after switch to hemera ONLY
+      exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
+      id: args._id,
+      role: options.role,
+      roles: ['*'] // @todo remove that after switch to hemera ONLY
     }
-
-    params = _.defaultsDeep(params,  utils.hide(args, options.login.fields))
+    params = _.defaultsDeep(params, utils.hide(args, options.login.fields))
     var token = jwt.sign(params, JWTSECRET)
 
     done(null, {
