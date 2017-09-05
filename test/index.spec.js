@@ -9,6 +9,7 @@ const utils = require('../utils.js');
 const ActStub = require('hemera-testsuite/actStub')
 const addStub = require('hemera-testsuite/addStub')
 const Nats = require('hemera-testsuite/natsStub')
+const HemeraJoi = require('hemera-joi')
 // assert library
 const expect = Code.expect
 
@@ -60,20 +61,31 @@ describe('hemera-account', function() {
 
     it('Login should return error because of missing email and password', function(done) {
         const nats = new Nats()
+
         const hemera = new Hemera(nats, {
-            logLevel: 'fatal'
+            logLevel: 'debug'
         })
         const actStub = new ActStub(hemera)
 
+
+        hemera.use(HemeraJoi)
+        // Use Joi as payload validator
+
         hemera.use(account)
+
         hemera.ready(() => {
 
+
+
+            hemera.setOption('payloadValidator', 'hemera-joi')
             // this is to send a request that pretends to go to nats
             // send request with rememberme
             addStub.run(hemera, {
                 topic: 'user',
                 cmd: 'login'
             }, {}, function(err, result) {
+                console.log(err)
+                console.log(result)
                 expect(err).to.exists()
                 done()
             })
@@ -86,7 +98,7 @@ describe('hemera-account', function() {
             logLevel: 'fatal'
         })
         const actStub = new ActStub(hemera)
-
+        hemera.use(HemeraJoi)
         hemera.use(account)
         hemera.ready(() => {
 
@@ -133,6 +145,7 @@ describe('hemera-account', function() {
         })
         const actStub = new ActStub(hemera)
 
+        hemera.use(HemeraJoi)
         hemera.use(account)
         hemera.ready(() => {
 
@@ -174,7 +187,7 @@ describe('hemera-account', function() {
             logLevel: 'fatal'
         })
         const actStub = new ActStub(hemera)
-
+        hemera.use(HemeraJoi)
         hemera.use(account)
         hemera.ready(() => {
 
@@ -218,7 +231,7 @@ describe('hemera-account', function() {
             logLevel: 'fatal'
         })
         const actStub = new ActStub(hemera)
-
+        hemera.use(HemeraJoi)
         hemera.use(account)
         hemera.ready(() => {
 
@@ -263,7 +276,7 @@ describe('hemera-account', function() {
             logLevel: 'fatal'
         })
         const actStub = new ActStub(hemera)
-
+        hemera.use(HemeraJoi)
         hemera.use(account)
         hemera.ready(() => {
 

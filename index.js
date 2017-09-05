@@ -26,13 +26,33 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     // extend default option by plugin option
     options = _.defaultsDeep(options, defaultOptions)
 
+    hemera.setOption('payloadValidator', 'hemera-joi')
+
+    let Joi = hemera.exposition['hemera-joi'].joi
+
     /**
      * Authenticate existing user
      */
     hemera.add({
         topic: options.role,
-        cmd: 'login'
+        cmd: 'login',
+        email: Joi.string().required(),
+        password: Joi.string().required()
     }, login)
+
+
+    /**
+     * register or authenticate existing user by token
+     */
+    hemera.add({
+        topic: options.role,
+        cmd: 'tokenlogin',
+        token: Joi.string().required(),
+        email: Joi.string().required(),
+        auth$: {
+            scope: [options.role + '_tokenlogin']
+        }
+    }, tokenLogin)
 
     /**
      * Register a new user
@@ -77,13 +97,61 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      */
 
     function register(args, done) {
+        let ctx = this
+
         checkEmail(args, function(err, res) {
             if (err) return done(err)
             prepareUser(args, function(err, res) {
                 if (err) return done(err)
-                saveuser(res, done)
+                preparePassword(args, function(err, res) {
+                    if (err) return done(err, null)
+                    saveuser(args, done, ctx)
+                })
             })
-        })
+        }, ctx)
+    }
+
+
+    function tokenLogin(args, done) {
+        let ctx = this
+        checkEmail(args, function(err, res) {
+            // if user exists
+            if (err) {
+                // update the data by email
+                updateByEmail(args, (err, res) => {
+                    if (err) return done(err)
+
+                    // generate the token
+                    generateToken(res, function(err, res) {
+                        done(err, res)
+                    })
+
+                    return done(null, {})
+                }, ctx)
+
+            } else {
+                prepareUser(args, function(err, res) {
+                    if (err) return done(err)
+
+                    saveuser(res, (err, res) => {
+
+                        if (err) return done(err, null)
+
+                        hemera.act({
+                            topic: options.store,
+                            cmd: 'findById',
+                            collection: options.collection,
+                            id: res._id
+                        }, function(err, res) {
+                            generateToken(res, function(err, res) {
+                                done(err, res)
+                            })
+                        })
+
+                    }, ctx)
+                })
+            }
+        }, ctx)
     }
 
     /**
@@ -102,17 +170,6 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         var hemera = this
 
         hemera.log.debug('login')
-
-        var email = args.email
-        var password = args.password
-        var username = args.username
-
-        // checking if email and password exists
-        if ((!email || !password) && (!username || !password)) {
-            const missingError = new UnauthorizedError('Missing email or password')
-            missingError.statusCode = 401
-            return done(missingError, null)
-        }
 
         // resolve the user first by email or username if provided
         resolveUser(args, function(err, res) {
@@ -171,6 +228,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }
 
 
+
     function profile(args, done) {
 
         let decoded = this.auth$
@@ -223,7 +281,8 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * @return {object} Email via callback
      */
 
-    function checkEmail(args, done) {
+    function checkEmail(args, done, ctx) {
+        let hemera = this || ctx
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
@@ -284,22 +343,48 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         return hashPassword(args, done)
     }
 
-    function saveuser(args, done) {
-        preparePassword(args, function(err, res) {
-            hemera.log.info('Saving user ' + args.email)
-            if (err) return done(err, null)
-            delete res.topic
-            delete res.cmd
+    function updateByEmail(args, done, ctx) {
 
-            let params = {
-                topic: options.store,
-                cmd: 'create',
-                collection: options.collection,
-                data: res
+        var hemera = this || ctx
+        hemera.log.info('Updating user by email')
+
+        let params = _.omit(args, options.update.omit)
+
+        hemera.act({
+            topic: options.store,
+            cmd: 'update',
+            collection: options.collection,
+            query: {
+                email: args.email
+            },
+            data: {
+                $set: params
             }
-            hemera.act(params, function(err, user) {
-                return done(err, user)
-            })
+        }, function(err, res) {
+
+            if (err) return done(err, null)
+            return done(null, utils.hide(res, options.login.fields))
+        })
+    }
+
+    function saveuser(args, done, ctx) {
+
+        let hemera = this || ctx
+
+        hemera.log.info('Saving user ' + args.email)
+
+        delete args.topic
+        delete args.cmd
+
+        let params = {
+            topic: options.store,
+            cmd: 'create',
+            collection: options.collection,
+            data: args
+        }
+
+        hemera.act(params, function(err, user) {
+            return done(err, user)
         })
     }
 
@@ -386,15 +471,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
 })
 
 exports.options = {
-    // role: {},
-    // storage: {
-    //   collection: {},
-    //   store_settings : {
-
-    //   }
-    // },
-    // salt: {},
-    // pepper: {}
+    payloadValidator: 'hemera-joi'
 }
 
 exports.attributes = {

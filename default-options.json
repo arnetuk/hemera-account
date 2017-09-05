@@ -11,6 +11,7 @@
         "unit": "days",
         "value": 5
     },
+    "tokenKeys": ["fbId"],
     "login": {
         "fields": [{
                 "name": "password",
