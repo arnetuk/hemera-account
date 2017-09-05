@@ -48,8 +48,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     hemera.add({
         topic: options.role,
         cmd: 'tokenlogin',
-        token: Joi.string().required(),
-        email: Joi.string().required(),
+        data: Joi.object().keys({ email: Joi.string().required(), token: Joi.string().required() }),
         auth$: {
             scope: [options.role + '_tokenlogin']
         }
@@ -116,11 +115,12 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
 
     function tokenLogin(args, done) {
         let hemera = this
-        checkEmail(args, function(err, res) {
+        let data = args.data
+        checkEmail(data, function(err, res) {
             // if user exists
             if (err) {
                 // update the data by email
-                updateByEmail(args, (err, res) => {
+                updateByEmail(data, (err, res) => {
                     if (err) return done(err)
 
                     // generate the token
@@ -132,7 +132,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                 }, hemera)
 
             } else {
-                prepareUser(args, function(err, res) {
+                prepareUser(data, function(err, res) {
                     if (err) return done(err)
 
                     saveuser(res, (err, res) => {

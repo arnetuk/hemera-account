@@ -28,6 +28,10 @@
             {
                 "name": "confirmed",
                 "hide": true
+            },
+            {
+                "name": "token",
+                "hide": true
             }
         ]
     },
