@@ -50,9 +50,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         cmd: 'tokenlogin',
         token: Joi.string().required(),
         email: Joi.string().required(),
-        // auth$: {
-        //     scope: [options.role + '_tokenlogin']
-        // }
+        auth$: {
+            scope: [options.role + '_tokenlogin']
+        }
     }, tokenLogin)
 
     /**
