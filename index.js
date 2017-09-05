@@ -41,6 +41,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
     }, login)
 
 
+
     /**
      * register or authenticate existing user by token
      */
@@ -49,9 +50,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         cmd: 'tokenlogin',
         token: Joi.string().required(),
         email: Joi.string().required(),
-        auth$: {
-            scope: [options.role + '_tokenlogin']
-        }
+        // auth$: {
+        //     scope: [options.role + '_tokenlogin']
+        // }
     }, tokenLogin)
 
     /**
@@ -96,8 +97,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
      * Example: `{"id": "6127389AFC981"}`
      */
 
+
     function register(args, done) {
-        let ctx = this
+        let hemera = this
 
         checkEmail(args, function(err, res) {
             if (err) return done(err)
@@ -105,15 +107,15 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                 if (err) return done(err)
                 preparePassword(args, function(err, res) {
                     if (err) return done(err, null)
-                    saveuser(args, done, ctx)
+                    saveuser(args, done, hemera)
                 })
             })
-        }, ctx)
+        }, hemera)
     }
 
 
     function tokenLogin(args, done) {
-        let ctx = this
+        let hemera = this
         checkEmail(args, function(err, res) {
             // if user exists
             if (err) {
@@ -127,7 +129,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                     })
 
                     return done(null, {})
-                }, ctx)
+                }, hemera)
 
             } else {
                 prepareUser(args, function(err, res) {
@@ -148,10 +150,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                             })
                         })
 
-                    }, ctx)
+                    }, hemera)
                 })
             }
-        }, ctx)
+        }, hemera)
     }
 
     /**
@@ -221,7 +223,6 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                 $set: params
             }
         }, function(err, res) {
-
             if (err) return done(err, null)
             return done(null, utils.hide(res, options.login.fields))
         })
@@ -230,7 +231,6 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
 
 
     function profile(args, done) {
-
         let decoded = this.auth$
         if (_.isUndefined(decoded.id)) {
             var err = new BadRequest('Missing user id')
@@ -243,7 +243,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
             topic: options.store,
             cmd: 'findById',
             collection: options.collection,
-            id: id
+            id: decoded.id
         }, function(err, res) {
             if (err) return done(err, null)
             return done(null, utils.hide(res, options.login.fields))
@@ -343,6 +343,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         return hashPassword(args, done)
     }
 
+
     function updateByEmail(args, done, ctx) {
 
         var hemera = this || ctx
@@ -440,9 +441,9 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
         let params = {
             exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
             id: args._id,
-            role: options.role
+            role: options.role,
+            roles: ['*'] // @todo remove that after switch to hemera ONLY
         }
-
         params = _.defaultsDeep(params, utils.hide(args, options.login.fields))
         var token = jwt.sign(params, JWTSECRET)
 
