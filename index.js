@@ -194,7 +194,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
             })
         })
 
-        hemera.log.debug('email and password ok : ' + email)
+        hemera.log.debug('email and password ok : ' + (args.email ? args.email : ''))
     }
 
     function update(args, done) {
