@@ -283,6 +283,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
 
     function checkEmail(args, done, ctx) {
         let hemera = this || ctx
+        if(!args){
+            var noArgs = new BadRequest('require email')
+            return done(noArgs, null)
+        }
         hemera.log.debug('Registration. Checking if email ' + args.email + ' exists')
         hemera.act({
             topic: options.store,
@@ -292,6 +296,7 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
                 email: args.email
             }
         }, function(err, userfound) {
+            console.log('err', err);
             if (err) return done(err, null)
 
             var userExistsError = new BadRequest('User exists')
@@ -345,7 +350,10 @@ exports.plugin = Hp(function hemeraAccount(options, next) {
 
 
     function updateByEmail(args, done, ctx) {
-
+        if(!args){
+            var noArgs = new BadRequest('require email')
+            return done(noArgs, null)
+        }
         var hemera = this || ctx
         hemera.log.info('Updating user by email')
 
