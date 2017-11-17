@@ -23,7 +23,8 @@
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "node-uuid": "^1.4.8"
+    "node-uuid": "^1.4.8",
+    "nodemailer": "^4.4.0"
   },
   "peerDependencies": {
     "nats-hemera": "1.x || 2.x"
