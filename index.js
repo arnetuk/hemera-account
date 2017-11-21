@@ -110,7 +110,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
 
             if (err) return done(err, null)
             if(user.token === args.token && !user.confirmed){
-            // if(user.token === args.token){
+                // if(user.token === args.token){
                 hemera.act({
                     topic: options.store,
                     cmd: 'updateById',
@@ -121,7 +121,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                     }
                 }, function (err, res) {
                     if (err) return done(err, null)
-                    return done(null, {message : "email confirmed!" ,  id: user._id, firstName : user.firstName})
+                    return done(null, {message : "email confirmed!" ,  id: user._id, name : user.name})
                 })
             }else{
                 var userExistsError = new BadRequest('Not exists')
@@ -236,7 +236,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 email: args.email
             }
         }, function (err, userfound) {
-            console.log('err', err)
             if (err) return done(err, null)
 
             var userExistsError = new BadRequest('User not exists')
@@ -347,7 +346,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function updateClientUser (args, id, done, ctx) {
-        console.log("update on reg");
 
         let payload = args;
         if(payload.topic ){
@@ -464,8 +462,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     function prepareClientUser(args, done){
         var user = {}
         user.username = args.username || args.email
-        user.firstName = args.firstName;
-        user.lastName = args.lastName;
+        user.name = args.firstName + args.lastName?" " + args.lastName:"";
         user.active = void 0 === args.active ? true : args.active
         user.password = args.password
         user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled
@@ -489,7 +486,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         var user = {}
         user.email = args.email;
         user.confirmed = false;
-        user.firstName = args.firstName;
+        user.name = args.firstName;
         user.registered = false
         user.token = Uuid();
         user.role = options.role;
@@ -523,7 +520,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 email: args.email
             }
         }, function (err, userfound) {
-            console.log('err', err)
             if (err) return done(err, null)
 
             var userExistsError = new BadRequest('User exists')
@@ -542,7 +538,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function preparePassword (args, done) {
-        console.log(args)
         hemera.log.debug('Preparing password')
 
         var password = void 0 === args.password ? args.pass : args.password
@@ -610,8 +605,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function saveuser (args, done, ctx) {
-        console.log(this);
-        console.log(ctx);
         let hemera = this || ctx
 
         hemera.log.info('Saving user ' + args.email)
