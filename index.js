@@ -109,35 +109,55 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }, updatePassword)
 
 
+    hemera.add({
+        topic: options.role,
+        cmd: 'loginasuser',
+        auth$: {
+            scope: [options.role + '_loginasuser']
+        }
+    }, loginasuser)
 
-
-    /**
-     * confirm email query
-     */
-    function confirmUser(args, done){
-        let hemera = this
+    function loginasuser (args, done){
+        var hemera = this
+        hemera.log.debug('loginAsUser')
         hemera.act({
             topic: options.store,
             cmd: 'findById',
             collection: options.collection,
             id: args.id
+        }, function (err, res) {
+            if (err) return done(err, null)
+            if(res === null) {
+                var userExistsError = new BadRequest('Not exists')
+                userExistsError.statusCode = 400
+                userExistsError.code = 'Not exists';
+                return done(userExistsError, null)
+            }
+            generateToken(res, function (err, res) {
+                done(err, res)
+            })
+            // return done(null, utils.hide(res, options.login.fields))
+        })
+        // resolve the user first by email or username if provided
+
+        hemera.log.debug('email and password ok : ' + (args.email ? args.email : ''))
+    }
+    /**
+     * confirm email query
+     */
+    function confirmUser(args, done){
+        let hemera = this;
+        let decode = jwt.decode(args.token)
+        hemera.act({
+            topic: options.store,
+            cmd: 'findById',
+            collection: options.collection,
+            id: decode.id
         }, function (err, user) {
 
             if (err) return done(err, null)
-            if(user.token === args.token && !user.confirmed){
-                // if(user.token === args.token){
-                hemera.act({
-                    topic: options.store,
-                    cmd: 'updateById',
-                    collection: options.collection,
-                    id: args.id,
-                    data: {
-                        $set: {confirmed : true}
-                    }
-                }, function (err, res) {
-                    if (err) return done(err, null)
-                    return done(null, {message : "email confirmed!" ,  id: user._id, name : user.name})
-                })
+            if(!user.confirmed){
+                return done(null, {message : "email confirmed!" ,  id: user._id, name : user.name})
             }else{
                 var userExistsError = new BadRequest('Not exists')
                 userExistsError.statusCode = 400
@@ -167,14 +187,18 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     function register (args, done) {
         let hemera = this;
         if(args.topic === 'client'){
+            var decode = jwt.decode(args.token);
+            if(!decode.id){
+                return done(new BadRequest('Token is invalid'), null)
+            }
             hemera.act({
                 topic: options.store,
                 cmd: 'findById',
                 collection: options.collection,
-                id: args.id
+                id: decode.id
             }, function (err, user) {
                 if(err) return done(err);
-                if(user.registered){
+                if(user.confirmed){
                     var noPermission = new BadRequest('No Permission')
                     noPermission.statusCode = 400;
                     done(noPermission, null)
@@ -186,7 +210,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
 
                         if (err) return done(err, null)
 
-                        updateClientUser(res, args.id, done,  hemera);
+                        updateClientUser(res, decode.id, done,  hemera);
                     }, hemera)
                 })
 
@@ -254,10 +278,10 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                     var data = {
                         id: res._id,
                         email: user.email,
-                        name: user.firstName,
-                        token: user.token
+                        name: user.firstName
                     }
-                    sendVerifyEmail(data, function (err, res) {
+                    let token = jwt.sign(data, JWTSECRET)
+                    sendVerifyEmail(data, token, function (err, res) {
                         if (err) return done(err)
                         return done(null, res, hemera)
                     })
@@ -439,6 +463,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         console.log("update on reg");
 
         let payload = args;
+        payload.confirmed = true;
         if(payload.topic ){
             delete payload.topic;
         }
@@ -451,6 +476,14 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         if(payload.repeat ){
             delete payload.repeat
         }
+        if(payload.token){
+            delete payload.token
+        }
+        if(payload.firstName && payload.lastName) {
+            payload.name = payload.firstName + " " +  payload.lastName
+            delete payload.firstName;
+            delete payload.lastName;
+        }
         var hemera = this || ctx
         hemera.log.info('Updating user')
 
@@ -460,8 +493,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             err.code = 'user-id'
             return done(err, null)
         }
-        payload.registered = true;
-        payload.token = null;
+
 
 
         hemera.act({
@@ -564,22 +596,21 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             user.confirmed = args.confirmed || false
             user.confirmcode = args.confirmcode === '74g7spbReQtpphCC' ? '74g7spbReQtpphCC' : Uuid() // static confirm code for tests
         }
+        user.confirmed = true;
 
         utils.conditionalExtend(user, args, options)
         return done(null, user)
     }
 
     /**
-     * Prepare client user. We generate token, make it unactive while user not confirm email;
+     * Prepare client user. Make it unactive while user not confirm email;
      */
     function prepareClientUserRegistration (args, done) {
         hemera.log.debug('Preparing client user')
         var user = {}
         user.email = args.email;
-        user.confirmed = false;
         user.name = args.firstName;
-        user.registered = false
-        user.token = Uuid();
+        user.confirmed = false
         user.role = options.role;
         return done(null, user)
 
@@ -630,7 +661,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function preparePassword (args, done) {
-        console.log(args)
         hemera.log.debug('Preparing password')
 
         var password = void 0 === args.password ? args.pass : args.password
@@ -698,8 +728,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function saveuser (args, done, ctx) {
-        console.log(this);
-        console.log(ctx);
         let hemera = this || ctx
 
         hemera.log.info('Saving user ' + args.email)
