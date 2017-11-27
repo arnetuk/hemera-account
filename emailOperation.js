@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 
 
-module.exports.sendVerifyEmail =  function sendVerifyEmail(args, cb){
+module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
 
 // create reusable transport method (opens pool of SMTP connections)
     var smtpTransport = nodemailer.createTransport({
@@ -30,8 +30,8 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, cb){
         'border-radius: 4px;'+
         'padding:3px;font-size: 28px;'+
         'font-weight:bold;cursor : pointer;height:40px;text-decoration:none'+
-        'display:inline-block;line-height:40px" ' +
-        'href="http://'+host+'/signup?token='+args.token + '&id=' + args.id +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
+        'display:inline-block;line-height:40px" ' + 
+        'href="http://'+host+'/signup?token='+token  +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.'+
         'And if you don’t see what you’re looking for there,' +
@@ -46,7 +46,7 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, cb){
     smtpTransport.sendMail(mailOptions, function(error, response){
         if(error){
             console.log('err', error)
-            cb(error);
+            cb(error, null);
         }else{
             console.log('success')
             cb(null, {message : "Verification email was sent on " + args.email});
