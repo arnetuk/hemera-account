@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+let BASE_HOST_URL = process.env.BASE_HOST_URL || 'localhost:3333'
 
 
 
@@ -12,7 +13,6 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
             pass: 'OlegPalchyk123'
         }
     });
-    var host = process.env.host?process.env.host: 'localhost:3333'
     var name = args.name || 'Friend';
 // setup e-mail data with unicode symbols
     let mailOptions = {
@@ -30,8 +30,8 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
         'border-radius: 4px;'+
         'padding:3px;font-size: 28px;'+
         'font-weight:bold;cursor : pointer;height:40px;text-decoration:none'+
-        'display:inline-block;line-height:40px" ' + 
-        'href="http://'+host+'/signup?token='+token  +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
+        'display:inline-block;line-height:40px" ' +
+        'href="http://'+ BASE_HOST_URL +'/signup?token='+token  +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.'+
         'And if you don’t see what you’re looking for there,' +
