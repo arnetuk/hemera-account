@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-let BASE_HOST_URL = process.env.BASE_HOST_URL || 'localhost:3333'
+let BASE_HOST_URL = process.env.BASE_HOST_URL || 'http://localhost:3333'
 
 
 
@@ -32,7 +32,7 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
         'padding:3px;font-size: 28px;'+
         'font-weight:bold;cursor : pointer;height:40px;text-decoration:none'+
         'display:inline-block;line-height:40px" ' +
-        'href="http://'+ BASE_HOST_URL +'/signup?token='+token  +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
+        'href="'+ BASE_HOST_URL +'/signup?token='+token  +'"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>'+
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.'+
         'And if you don’t see what you’re looking for there,' +
@@ -84,7 +84,7 @@ module.exports.sendResetPasswordEmail = function (args, cb) {
         'padding:3px;font-size: 28px;'+
         'font-weight:bold;cursor : pointer;height:40px;text-decoration:none'+
         'display:inline-block;line-height:40px" ' +
-        'href="http://'+BASE_HOST_URL +'/reset-password?token='+ args.token +'"' + '>Reset Password</a></p>'+
+        'href="'+BASE_HOST_URL +'/reset-password?token='+ args.token +'"' + '>Reset Password</a></p>'+
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.'+
         'And if you don’t see what you’re looking for there,' +
