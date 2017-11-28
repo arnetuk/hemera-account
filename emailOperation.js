@@ -14,6 +14,7 @@ module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
         }
     });
     var name = args.name || 'Friend';
+    console.log(BASE_HOST_URL)
 // setup e-mail data with unicode symbols
     let mailOptions = {
         from: "olegpalchyk2@gmail.com", // sender address
