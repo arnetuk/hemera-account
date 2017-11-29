@@ -15,6 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "boom": "^7.1.1",
     "crypto": "0.0.3",
     "deep-extend": "^0.5.0",
     "hemera-joi": "1.x",
@@ -23,8 +24,10 @@
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "node-ses": "^2.1.0",
     "node-uuid": "^1.4.8",
-    "nodemailer": "^4.4.0"
+    "nodemailer": "^4.4.0",
+    "nodemailer-ses-transport": "^1.5.1"
   },
   "peerDependencies": {
     "nats-hemera": "1.x || 2.x"
