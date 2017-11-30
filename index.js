@@ -86,28 +86,27 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         topic: options.role,
         cmd: 'createUser',
         email: Joi.string().required(),
-        firstName : Joi.string().required()
+        firstName: Joi.string().required()
     }, createUser)
 
     hemera.add({
         topic: options.role,
         cmd: 'resendEmail',
-        email: Joi.string().required(),
+        email: Joi.string().required()
     }, resendConfirmEmail)
 
     hemera.add({
         topic: options.role,
         cmd: 'resetpassword',
-        email: Joi.string().required(),
+        email: Joi.string().required()
     }, resetPassword)
 
     hemera.add({
         topic: options.role,
         cmd: 'createnewpassword',
         password: Joi.string().required(),
-        repeat: Joi.string().required(),
+        repeat: Joi.string().required()
     }, updatePassword)
-
 
     hemera.add({
         topic: options.role,
@@ -117,7 +116,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         }
     }, loginasuser)
 
-    function loginasuser (args, done){
+    function loginasuser (args, done) {
         var hemera = this
         hemera.log.debug('loginAsUser')
         hemera.act({
@@ -127,10 +126,10 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             id: args.id
         }, function (err, res) {
             if (err) return done(err, null)
-            if(res === null) {
+            if (res === null) {
                 var userExistsError = new BadRequest('Not exists')
                 userExistsError.statusCode = 400
-                userExistsError.code = 'Not exists';
+                userExistsError.code = 'Not exists'
                 return done(userExistsError, null)
             }
             generateToken(res, function (err, res) {
@@ -145,8 +144,8 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     /**
      * confirm email query
      */
-    function confirmUser(args, done){
-        let hemera = this;
+    function confirmUser (args, done) {
+        let hemera = this
         let decode = jwt.decode(args.token)
         hemera.act({
             topic: options.store,
@@ -154,14 +153,20 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             collection: options.collection,
             id: decode.id
         }, function (err, user) {
-
             if (err) return done(err, null)
-            if(!user.confirmed){
-                return done(null, {message : "email confirmed!" ,  id: user._id, name : user.name})
-            }else{
+            if (user === null) {
                 var userExistsError = new BadRequest('Not exists')
                 userExistsError.statusCode = 400
-                userExistsError.code = 'Not exists';
+                userExistsError.code = 'Not exists'
+                return done(userExistsError)
+            }
+
+            if (!user.confirmed) {
+                return done(null, {message: 'email confirmed!', id: user._id, name: user.name})
+            } else {
+                var userExistsError = new BadRequest('Not exists')
+                userExistsError.statusCode = 400
+                userExistsError.code = 'Not exists'
                 return done(userExistsError, null)
             }
         })
@@ -185,10 +190,10 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
      * Example: `{"id": "6127389AFC981"}`
      */
     function register (args, done) {
-        let hemera = this;
-        if(args.topic === 'client'){
-            var decode = jwt.decode(args.token);
-            if(!decode.id){
+        let hemera = this
+        if (args.topic === 'client') {
+            var decode = jwt.decode(args.token)
+            if (!decode.id) {
                 return done(new BadRequest('Token is invalid'), null)
             }
             hemera.act({
@@ -197,25 +202,22 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 collection: options.collection,
                 id: decode.id
             }, function (err, user) {
-                if(err) return done(err);
-                if(user.confirmed){
-                    var noPermission = new BadRequest('No Permission')
-                    noPermission.statusCode = 400;
+                if (err) return done(err)
+                if (user.confirmed) {
+                    let noPermission = new BadRequest('No Permission')
+                    noPermission.statusCode = 400
                     done(noPermission, null)
                 }
-                prepareClientUser(args, function (err, user) {
-
+                prepareClientUser(user, args, function (err, user) {
                     if (err) return done(err)
-                    preparePassword(args, function (err, res) {
-
+                    preparePassword(user, function (err, res) {
                         if (err) return done(err, null)
 
-                        updateClientUser(res, decode.id, done,  hemera);
+                        updateClientUser(res, decode.id, done, hemera)
                     }, hemera)
                 })
-
             })
-        }else{
+        } else {
             checkEmail(args, function (err, res) {
                 if (err) return done(err)
                 prepareUser(args, function (err, res) {
@@ -225,24 +227,21 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                         saveuser(args, done, hemera)
                     })
                 })
-
-
             }, hemera)
         }
-
     }
 
     function updatePassword (args, done) {
-        let hemera = this;
+        let hemera = this
         let decoded = jwt.decode(args.token, {
             complete: true
         })
-        let userId = decoded.payload._id;
+        let userId = decoded.payload._id
         hemera.act({
             topic: options.store,
             cmd: 'findById',
             collection: options.collection,
-            id : userId
+            id: userId
         }, function (err, user) {
             console.log('err', err)
             if (err) return done(err, null)
@@ -250,24 +249,21 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             userExistsError.statusCode = 400
             userExistsError.code = 'user-not-exists'
             if (user == null) return done(userExistsError, null)
-            user = _.assign(user, args);
-            if(user.token){
+            user = _.assign(user, args)
+            if (user.token) {
                 delete user['token']
             }
-            if(user._id){
+            if (user._id) {
                 delete user['_id']
             }
             preparePassword(user, function (err, res) {
-
                 if (err) return done(err, null)
 
-                updateClientUser(res, userId, done,  hemera);
+                updateClientUser(res, userId, done, hemera)
             }, hemera)
-
         })
-
     }
-    function createUser (args, done){
+    function createUser (args, done) {
         let hemera = this
         checkEmail(args, function (err, res) {
             if (err) return done(err)
@@ -285,17 +281,12 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                         if (err) return done(err)
                         return done(null, res, hemera)
                     })
-
                 }, hemera)
-
             })
-
-
         }, hemera)
-
     }
-    function resetPassword(args, done){
-        let hemera = this;
+    function resetPassword (args, done) {
+        let hemera = this
         if (!args) {
             var noArgs = new BadRequest('require email')
             return done(noArgs, null)
@@ -315,27 +306,24 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             userExistsError.statusCode = 400
             userExistsError.code = 'user-not-exists'
             if (userfound.result.length == 0) return done(userExistsError, null)
-            var user = userfound.result[0];
+            var user = userfound.result[0]
             var data = {
                 email: user.email,
-                name: user.firstName,
+                name: user.firstName
             }
             generateToken(user, function (err, res) {
-                if(err)return done(err, null)
+                if (err) return done(err, null)
                 data.token = res.token
                 sendResetPasswordEmail(data, function (err, res) {
                     if (err) return done(err)
                     return done(null, res, hemera)
                 })
             })
-
-
-
         })
     }
 
-    function resendConfirmEmail(args, done){
-        let hemera = this;
+    function resendConfirmEmail (args, done) {
+        let hemera = this
         if (!args) {
             var noArgs = new BadRequest('require email')
             return done(noArgs, null)
@@ -357,7 +345,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             userExistsError.code = 'user-not-exists'
             if (userfound.result.length == 0) return done(userExistsError, null)
 
-            var user = userfound.result[0];
+            var user = userfound.result[0]
             var data = {
                 id: user._id,
                 email: user.email,
@@ -369,7 +357,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 return done(null, res, hemera)
             })
         })
-
     }
 
     function tokenLogin (args, done) {
@@ -387,29 +374,26 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                         done(err, res)
                     })
 
-                    return done(null, {})
-                }, hemera)
-
+                return done(null, {})
+            }, hemera)
             } else {
                 prepareUser(data, function (err, res) {
                     if (err) return done(err)
 
                     saveuser(res, (err, res) => {
-
                         if (err) return done(err, null)
 
                         hemera.act({
-                            topic: options.store,
-                            cmd: 'findById',
-                            collection: options.collection,
-                            id: res._id
-                        }, function (err, res) {
-                            generateToken(res, function (err, res) {
-                                done(err, res)
-                            })
+                        topic: options.store,
+                        cmd: 'findById',
+                        collection: options.collection,
+                        id: res._id
+                    }, function (err, res) {
+                        generateToken(res, function (err, res) {
+                            done(err, res)
                         })
-
-                    }, hemera)
+                    })
+                }, hemera)
                 })
             }
         }, hemera)
@@ -436,9 +420,9 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             if (err) return done(err, null)
             // add response to args
             args = _.defaultsDeep(args, res)
-            if(!args.confirmed && args.role ==='client'){
+            if (!args.confirmed && args.role === 'client') {
                 const missingError = new UnauthorizedError('Email not confirmed! Please confirm email')
-                missingError.statusCode = 401;
+                missingError.statusCode = 401
                 return done(missingError, null)
             }
             // add salt so that we can veryfy the password, add retrieved password
@@ -460,29 +444,29 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function updateClientUser (args, id, done, ctx) {
-        console.log("update on reg");
+        console.log('update on reg')
 
-        let payload = args;
-        payload.confirmed = true;
-        if(payload.topic ){
-            delete payload.topic;
+        let payload = args
+        payload.confirmed = true
+        if (payload.topic) {
+            delete payload.topic
         }
-        if(payload.id){
+        if (payload.id) {
             delete payload.id
         }
-        if(payload.cmd ){
+        if (payload.cmd) {
             delete payload.cmd
         }
-        if(payload.repeat ){
+        if (payload.repeat) {
             delete payload.repeat
         }
-        if(payload.token){
+        if (payload.token) {
             delete payload.token
         }
-        if(payload.firstName && payload.lastName) {
-            payload.name = payload.firstName + " " +  payload.lastName
-            delete payload.firstName;
-            delete payload.lastName;
+        if (payload.firstName && payload.lastName) {
+            payload.name = payload.firstName + ' ' + payload.lastName
+            delete payload.firstName
+            delete payload.lastName
         }
         var hemera = this || ctx
         hemera.log.info('Updating user')
@@ -493,8 +477,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             err.code = 'user-id'
             return done(err, null)
         }
-
-
 
         hemera.act({
             topic: options.store,
@@ -582,23 +564,32 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         return done(null, user)
     }
 
-    function prepareClientUser(args, done){
-        var user = {}
-        user.username = args.username || args.email
-        user.name = args.firstName + args.lastName?" " + args.lastName:"";
+    function prepareClientUser (userBase, args, done) {
+        console.log('prepare client user')
+        let user = _.cloneDeep(userBase)
+        if (user._id) {
+            delete user._id
+        }
+        user.username = args.username || args.email || args.firstName + args.lastName ? ' ' + args.lastName : ''
+        user.name = args.firstName + args.lastName ? ' ' + args.lastName : ''
         user.active = void 0 === args.active ? true : args.active
         user.password = args.password
         user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled
         user.failedLoginCount = 0
         user.scope = args.scope
         user.group = args.group
+        user.contact.firstName = args.firstName
+        user.contact.lastName = args.lastName
+        user.registrationStep = 'initial'
+
         if (options.confirm) {
             user.confirmed = args.confirmed || false
             user.confirmcode = args.confirmcode === '74g7spbReQtpphCC' ? '74g7spbReQtpphCC' : Uuid() // static confirm code for tests
         }
-        user.confirmed = true;
+        user.confirmed = true
 
         utils.conditionalExtend(user, args, options)
+        console.log('user', user)
         return done(null, user)
     }
 
@@ -606,12 +597,21 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
      * Prepare client user. Make it unactive while user not confirm email;
      */
     function prepareClientUserRegistration (args, done) {
-        hemera.log.debug('Preparing client user')
+        hemera.log.debug('Preparing client user registration')
         var user = {}
-        user.email = args.email;
-        user.name = args.firstName;
+        user.email = args.email
+        user.name = args.firstName
         user.confirmed = false
-        user.role = options.role;
+        user.role = options.role
+        user.username = args.email
+        user.contact = {
+            email: args.email,
+            firstName: args.firstName
+        }
+        user.roles = ['*']
+        user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled
+        user.scope = args.scope || ''
+        user.group = args.group || options.group
         return done(null, user)
 
         utils.conditionalExtend(user, args, options)
@@ -649,7 +649,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             userExistsError.statusCode = 400
             userExistsError.code = 'user-exists'
 
-            if(userfound.result.length > 0 && !userfound.result[0].confirmed) {
+            if (userfound.result.length > 0 && !userfound.result[0].confirmed) {
                 var userExistsError = new BadRequest('User exists')
                 userExistsError.statusCode = 401
                 userExistsError.code = 'user-exists'
@@ -721,7 +721,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 $set: params
             }
         }, function (err, res) {
-
             if (err) return done(err, null)
             return done(null, utils.hide(res, options.login.fields))
         })
@@ -753,7 +752,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
 
             if (res.password !== args.compareWith) {
                 const missingError = new UnauthorizedError('Wrong email or password')
-                missingError.statusCode = 402;
+                missingError.statusCode = 402
                 return done(missingError, null)
             }
 
@@ -784,13 +783,13 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
 
             if (resp.result.length === 0) {
                 const userNotFound = new UnauthorizedError('UserNotFound')
-                userNotFound.statusCode = 400;
+                userNotFound.statusCode = 400
                 /**
                  * THere we will write the key status, so eror can be shown right
                  * 0 - not found
                  *
                  * */
-                userNotFound.errorCode = 2;
+                userNotFound.errorCode = 2
                 return done(userNotFound, null)
             }
             return done(null, resp.result[0])
