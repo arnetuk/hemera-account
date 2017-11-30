@@ -1,7 +1,5 @@
 const nodemailer = require('nodemailer');
 
-
-
 module.exports.sendVerifyEmail =  function sendVerifyEmail(args, token, cb){
 
 // create reusable transport method (opens pool of SMTP connections)
