@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer')
-const ses = require('node-ses')
 const SesTransport = require('nodemailer-ses-transport')
 let BASE_HOST_URL = process.env.BASE_HOST_URL || 'http://localhost:3333'
 let EMAIL_ID = process.env.EMAIL_KEY
