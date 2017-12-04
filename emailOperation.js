@@ -2,32 +2,14 @@
 const nodemailer = require('nodemailer')
 const SesTransport = require('nodemailer-ses-transport')
 let BASE_HOST_URL = process.env.BASE_HOST_URL || 'http://localhost:3333'
-let EMAIL_ID = process.env.EMAIL_KEY
-let EMAIL_SECRET = process.env.EMAIL_SECRET
-module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, cb) {
-    // client.sendEmail({
-    //   to: args.email,
-    //   from: 'admin@scraper.amzlenders.com',
-    //   // cc: 'theWickedWitch@nerds.net',
-    //   // bcc: ['canAlsoBe@nArray.com', 'forrealz@.org'],
-    //   subject: 'greetings',
-    //   message: 'your <b>message</b> goes here',
-    //   altText: 'plain text'
-    // }, function (error, response) {
-    //   if (error) {
-    //     console.log('err', error)
-    //     let err = new Error(error.message);
-    //     cb(err, null)
-    //   } else {
-    //     console.log('success')
-    //     cb(null, {message: 'Verification email was sent on ' + args.email})
-    //   }
-    // })
+
+module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb) {
+ 
 
 // create reusable transport method (opens pool of SMTP connections)
 //   let sesTRSP = new SesTransport({
-//     accessKeyId: EMAIL_ID,
-//     secretAccessKey: EMAIL_SECRET,
+//     accessKeyId: keys.EMAIL_KEY,
+//     secretAccessKey: keys.EMAIL_SECRET,
 //     rateLimit: 5
 //   })
   let smtpTransport = nodemailer.createTransport({

@@ -277,7 +277,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                         name: user.firstName
                     }
                     let token = jwt.sign(data, JWTSECRET)
-                    sendVerifyEmail(data, token, function (err, res) {
+                    sendVerifyEmail(data, token, {keys: {EMAIL_KEY : options.EMAIL_KEY}, EMAIL_SECRET: options.EMAIL_SECRET},  function (err, res) {
                         if (err) return done(err)
                         return done(null, res, hemera)
                     })
@@ -314,7 +314,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             generateToken(user, function (err, res) {
                 if (err) return done(err, null)
                 data.token = res.token
-                sendResetPasswordEmail(data, function (err, res) {
+                sendResetPasswordEmail(data, {keys: {EMAIL_KEY : options.EMAIL_KEY}, EMAIL_SECRET: options.EMAIL_SECRET}, function (err, res) {
                     if (err) return done(err)
                     return done(null, res, hemera)
                 })
@@ -349,10 +349,11 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             var data = {
                 id: user._id,
                 email: user.email,
-                name: user.firstName,
-                token: user.token
+                name: user.firstName
             }
-            sendVerifyEmail(data, function (err, res) {
+            let token = jwt.sign(data, JWTSECRET)
+            
+            sendVerifyEmail(data, token, {keys: {EMAIL_KEY : options.EMAIL_KEY}, EMAIL_SECRET: options.EMAIL_SECRET},function (err, res) {
                 if (err) return done(err)
                 return done(null, res, hemera)
             })
