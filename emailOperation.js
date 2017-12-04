@@ -1,29 +1,28 @@
 /* eslint-disable no-unused-vars */
 const nodemailer = require('nodemailer')
-const SesTransport = require('nodemailer-ses-transport')
+const ses = require('nodemailer-ses-transport')
 let BASE_HOST_URL = process.env.BASE_HOST_URL || 'http://localhost:3333'
 
 module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb) {
- 
 
 // create reusable transport method (opens pool of SMTP connections)
-//   let sesTRSP = new SesTransport({
-//     accessKeyId: keys.EMAIL_KEY,
-//     secretAccessKey: keys.EMAIL_SECRET,
-//     rateLimit: 5
-//   })
-  let smtpTransport = nodemailer.createTransport({
-    service: 'Gmail', // sets automatically host, port and connection security settings
-    auth: {
-      user: 'olegpalchyk2@gmail.com',
-      pass: 'OlegPalchyk123'
-    }
-  })
+  let sesTRSP = nodemailer.createTransport(ses({
+      accessKeyId: keys.EMAIL_KEY,
+      secretAccessKey: keys.EMAIL_SECRET,
+      rateLimit: 5
+  }))
+  // let smtpTransport = nodemailer.createTransport({
+  //   service: 'Gmail', // sets automatically host, port and connection security settings
+  //   auth: {
+  //     user: 'olegpalchyk2@gmail.com',
+  //     pass: 'OlegPalchyk123'
+  //   }
+  // })
   let name = args.name || 'Friend'
   console.log(BASE_HOST_URL)
 // setup e-mail data with unicode symbols
   let mailOptions = {
-    from: 'olegpalchyk2@gmail.com', // sender address
+    from: 'admin@scraper.amzlenders.com', // sender address
     to: args.email, // list of receivers
     subject: 'AmzLenders', // Title line
     html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
@@ -50,7 +49,7 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
   }
 
 // send mail with defined transport object
-  smtpTransport.sendMail(mailOptions, function (error, response) {
+    sesTRSP.sendMail(mailOptions, function (error, response) {
     if (error) {
       console.log('err', error)
       cb(error, null)
@@ -59,24 +58,24 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
       cb(null, {message: 'Verification email was sent on ' + args.email})
     }
 
-    smtpTransport.close() // shut down the connection pool, no more messages
+     sesTRSP.close() // shut down the connection pool, no more messages
   })
 }
 
-module.exports.sendResetPasswordEmail = function (args, cb) {
+module.exports.sendResetPasswordEmail = function (args, token,  keys, cb) {
     // create reusable transport method (opens pool of SMTP connections)
-  var smtpTransport = nodemailer.createTransport({
-    service: 'Gmail', // sets automatically host, port and connection security settings
-    auth: {
-      user: 'olegpalchyk2@gmail.com',
-      pass: 'OlegPalchyk123'
-    }
-  })
+
+    let smtpTransport = nodemailer.createTransport(ses({
+        accessKeyId: keys.EMAIL_KEY,
+        secretAccessKey: keys.EMAIL_SECRET,
+        rateLimit: 5
+    }))
+
   var host = process.env.host ? process.env.host : 'localhost:3333'
   var name = args.name || 'Friend'
 // setup e-mail data with unicode symbols
   let mailOptions = {
-    from: 'olegpalchyk2@gmail.com', // sender address
+    from: 'admin@scraper.amzlenders.com', // sender address
     to: args.email, // list of receivers
     subject: 'AmzLenders', // Title line
     html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
@@ -90,7 +89,7 @@ module.exports.sendResetPasswordEmail = function (args, cb) {
         'padding:3px;font-size: 28px;' +
         'font-weight:bold;cursor : pointer;height:40px;text-decoration:none' +
         'display:inline-block;line-height:40px" ' +
-        'href="' + BASE_HOST_URL + '/reset-password?token=' + args.token + '"' + '>Reset Password</a></p>' +
+        'href="' + BASE_HOST_URL + '/reset-password?token=' + token + '"' + '>Reset Password</a></p>' +
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.' +
         'And if you don’t see what you’re looking for there,' +
