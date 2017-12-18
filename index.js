@@ -274,7 +274,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                     var data = {
                         id: res._id,
                         email: user.email,
-                        name: user.firstName
+                        name: user.name
                     }
                     let token = jwt.sign(data, JWTSECRET)
                     sendVerifyEmail(data, token, { EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET},  function (err, res) {
@@ -309,7 +309,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             var user = userfound.result[0]
             var data = {
                 email: user.email,
-                name: user.firstName
+                name: user.name
             }
             generateToken(user, function (err, res) {
                 if (err) return done(err, null)
