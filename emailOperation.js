@@ -24,7 +24,7 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
   let mailOptions = {
     from: 'admin@amzlenders.com', // sender address
     to: args.email, // list of receivers
-    subject: 'AmzLenders', // Title line
+    subject: 'amzLenders', // Title line
     html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
         '<b>Hi ' + name + ',</b>' +
         '<p>Thanks for signing up with us!</p>' +
@@ -77,7 +77,7 @@ module.exports.sendResetPasswordEmail = function (args, token,  keys, cb) {
   let mailOptions = {
     from: 'admin@amzlenders.com', // sender address
     to: args.email, // list of receivers
-    subject: 'AmzLenders', // Title line
+    subject: 'amzLenders', // Title line
     html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
         '<b>Hi ' + name + ',</b>' +
         '<p>You click on reset password!</p>' +
