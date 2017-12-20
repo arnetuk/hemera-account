@@ -1,5 +1,5 @@
 'use strict'
-
+var request = require('request');
 let JWTSECRET = process.env.JWTSECRET || 'test'
 
 const Hp = require('hemera-plugin')
@@ -268,27 +268,43 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             }, hemera)
         })
     }
+
     function createUser (args, done) {
-        let hemera = this
-        checkEmail(args, function (err, res) {
-            if (err) return done(err)
-            prepareClientUserRegistration(args, function (err, user) {
-                if (err) return done(err)
-                saveuser(user, function (err, res) {
-                    if (err) return done(err)
-                    var data = {
-                        id: res._id,
-                        email: user.email,
-                        name: user.name
-                    }
-                    let token = jwt.sign(data, JWTSECRET)
-                    sendVerifyEmail(data, token, { EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET},  function (err, res) {
+        let hemera = this;
+        request.post(
+            {url : 'https://www.google.com/recaptcha/api/siteverify',
+            form : { secret: options.GOOGLE_SECRET,
+                    response: args.captchaToken
+            }},
+            function (error, response, body) {
+                console.log('error', error);
+                console.log('response', response.statusCode)
+                if(error) return done(error);
+                if (!error && response.statusCode == 200) {
+                    console.log(body)
+                    checkEmail(args, function (err, res) {
                         if (err) return done(err)
-                        return done(null, res, hemera)
-                    })
-                }, hemera)
-            })
-        }, hemera)
+                        prepareClientUserRegistration(args, function (err, user) {
+                            if (err) return done(err)
+                            saveuser(user, function (err, res) {
+                                if (err) return done(err)
+                                var data = {
+                                    id: res._id,
+                                    email: user.email,
+                                    name: user.name
+                                }
+                                let token = jwt.sign(data, JWTSECRET)
+                                sendVerifyEmail(data, token, { EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET},  function (err, res) {
+                                    if (err) return done(err)
+                                    return done(null, res, hemera)
+                                })
+                            }, hemera)
+                        })
+                    }, hemera)
+
+                }
+            }
+            )
     }
 
     // function sendEEE(args, done) {

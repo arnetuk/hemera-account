@@ -25,7 +25,8 @@
     "moment": "^2.18.1",
     "node-uuid": "^1.4.8",
     "nodemailer": "^4.4.0",
-    "nodemailer-ses-transport": "^1.5.1"
+    "nodemailer-ses-transport": "^1.5.1",
+    "request": "^2.83.0"
   },
   "peerDependencies": {
     "nats-hemera": "1.x || 2.x"
