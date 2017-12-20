@@ -116,6 +116,11 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         }
     }, loginasuser)
 
+    // hemera.add({
+    //     topic: options.role,
+    //     cmd : 'eee'
+    // }, sendEEE)
+
     function loginasuser (args, done) {
         var hemera = this
         hemera.log.debug('loginAsUser')
@@ -285,6 +290,19 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             })
         }, hemera)
     }
+
+    // function sendEEE(args, done) {
+    //     var data = {
+    //         id: '123',
+    //         email: 'olegpalchyk@gmail.com',
+    //         name: 'Oleg'
+    //     }
+    //     sendVerifyEmail(data, '12345', { EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET}, function (err, resp) {
+    //         if(err) return done(err)
+    //         return done(null, resp) 
+    //     })
+    // }
+
     function resetPassword (args, done) {
         let hemera = this
         if (!args) {

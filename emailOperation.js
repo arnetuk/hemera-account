@@ -24,24 +24,30 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
   let mailOptions = {
     from: 'admin@amzlenders.com', // sender address
     to: args.email, // list of receivers
-    subject: 'amzLenders', // Title line
-    html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
+    subject: name + ', welcome to amzLenders!', // Title line
+    html: '<div style = "background-color : white; padding :10px; font-size : 16px; color : #000000">' +
+        '<img alt="3.jpg" src="https://amzlendersdriverslicence.s3.amazonaws.com/3.jpg" style="max-width: 100%"/>' +
+        '<br>'+
+        '<br>'+
         '<b>Hi ' + name + ',</b>' +
+        '<br>'+
         '<p>Thanks for signing up with us!</p>' +
+        '<br>'+
         '<p>I’m Steve, the founder of amzLenders.  I started amzLenders to provide Amazon sellers with a fast, fair and affordable way to get the funds to grow.</p>' +
+        '<br>'+
         '<p>We’re excited to work with you!</p>' +
+        '<br>' +
         '<p>To get on board, click the button below to verify your email address and  complete your account setup.</p>' +
         '<p style="text-align: center"><a style="text-align:center;' +
-        'background-color: orange;' +
-        'border-radius: 4px;' +
-        'padding:3px;font-size: 28px;' +
-        'font-weight:bold;cursor : pointer;height:40px;text-decoration:none' +
-        'display:inline-block;line-height:40px" ' +
-        'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>CONTINUE ACCOUNT REGISTRATION</a></p>' +
+        'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
+        '<button  style="margin: 0 10%; background: #91b927; font-size: 40px;line-height: 1.2em;color : #ffffff;padding: 7px 20px;' +
+    '    border: none;">VERIFY EMAIL</button>' +
+        '</a></p>' +
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.' +
         'And if you don’t see what you’re looking for there,' +
         'our support team is always happy to help you. </p>' +
+        '<br>'+
         '<p>Regards,</p>' +
         '<p>Steve</p>' +
         '<p>Founder, amzLenders</p>' +
