@@ -38,11 +38,15 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
         '<p>We’re excited to work with you!</p>' +
         '<br>' +
         '<p>To get on board, click the button below to verify your email address and  complete your account setup.</p>' +
-        '<p style="text-align: center"><a style="text-align:center;' +
-        'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
-        '<button  style="margin: 0 10%; background: #91b927; font-size: 40px;line-height: 1.2em;color : #ffffff;padding: 7px 20px;' +
-    '    border: none;">VERIFY EMAIL</button>' +
-        '</a></p>' +
+        '<p style="text-align: center">' +
+        // '<a style="text-align:center;' +
+        // 'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
+        '<a  style="margin: 0 10%; background: #91b927; font-size: 40px;line-height: 1.2em;color : #ffffff!important;padding: 7px 20px;' +
+        'border: none;text-decoration: none"' +
+        ' href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
+        'VERIFY EMAIL</a>' +
+        // '</a>' +
+        '</p>' +
         '<p>If you have questions about how amzLenders works,' +
         'we’ve got FAQs - and a comprehensive Knowledge Base.' +
         'And if you don’t see what you’re looking for there,' +
