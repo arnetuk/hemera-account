@@ -29,28 +29,26 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
         '<img alt="3.jpg" src="https://amzlendersdriverslicence.s3.amazonaws.com/3.jpg" style="max-width: 100%"/>' +
         '<br>'+
         '<br>'+
-        '<b>Hi ' + name + ',</b>' +
+        '<b style="color : #000000">Hi ' + name + ',</b>' +
         '<br>'+
-        '<p>Thanks for signing up with us!</p>' +
-        '<br>'+
-        '<p>I’m Steve, the founder of amzLenders.  I started amzLenders to provide Amazon sellers with a fast, fair and affordable way to get the funds to grow.</p>' +
-        '<br>'+
-        '<p>We’re excited to work with you!</p>' +
-        '<br>' +
-        '<p>To get on board, click the button below to verify your email address and  complete your account setup.</p>' +
+        '<p style="color : #000000">Thanks for signing up with us!</p>' +
+        '<p style="color : #000000">I’m Steve, the founder of amzLenders.  I started amzLenders to provide Amazon sellers with a fast, fair and affordable way to get the funds to grow.</p>' +
+        '<p style="color : #000000">We’re excited to work with you!</p>' +
+        '<p style="color : #000000">To get on board, click the button below to verify your email address and  complete your account setup.</p>' +
         '<p style="text-align: center">' +
         // '<a style="text-align:center;' +
         // 'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
-        '<a  style="margin: 0 10%; background: #91b927; font-size: 40px;line-height: 1.2em;color : #ffffff!important;padding: 7px 20px;' +
+        '<a  style="margin: 0 10%; background: #91b927; font-size: 32px;line-height: 1.2em;color : #ffffff!important;padding: 7px 20px;' +
         'border: none;text-decoration: none"' +
         ' href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
         'VERIFY EMAIL</a>' +
         // '</a>' +
         '</p>' +
-        '<p>If you have questions about how amzLenders works,' +
-        'we’ve got FAQs - and a comprehensive Knowledge Base.' +
-        'And if you don’t see what you’re looking for there,' +
-        'our support team is always happy to help you. </p>' +
+        '<br>' +
+        '<p style="color : #000000">If you have questions about how amzLenders works, ' +
+        'we’ve got <a href="https://support.amzlenders.com/support/home">FAQs - and a comprehensive Knowledge Base</a>. ' +
+        'And if you don’t see what you’re looking for there, ' +
+        'our <a href="mailto:support@amzlenders.com">support team</a> is always happy to help you. </p>' +
         '<br>'+
         '<p>Regards,</p>' +
         '<p>Steve</p>' +

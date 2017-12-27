@@ -113,7 +113,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         cmd: 'loginasuser',
         auth$: {
             scope: [options.role + '_loginasuser']
-        }
+        } 
     }, loginasuser)
 
     hemera.add({
