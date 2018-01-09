@@ -86,7 +86,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         topic: options.role,
         cmd: 'createUser',
         email: Joi.string().required(),
-        firstName: Joi.string().required()
     }, createUser)
 
     hemera.add({
@@ -291,7 +290,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                                 var data = {
                                     id: res._id,
                                     email: user.email,
-                                    name: user.name
+                                    name: user.email
                                 }
                                 let token = jwt.sign(data, JWTSECRET)
                                 sendVerifyEmail(data, token, { EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET},  function (err, res) {
@@ -384,7 +383,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             var data = {
                 id: user._id,
                 email: user.email,
-                name: user.firstName
+                name: user.email
             }
             let token = jwt.sign(data, JWTSECRET)
             
@@ -642,7 +641,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         user.username = args.email
         user.contact = {
             email: args.email,
-            firstName: args.firstName
+            firstName: args.firstName || ""
         }
         user.roles = ['*']
         user.created = args.forceCreated ? (args.created || new Date().toISOString()) : new Date().toISOString() // args.created can be used if forceCreated enabled

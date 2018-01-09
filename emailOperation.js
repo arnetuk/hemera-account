@@ -25,8 +25,8 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
     from: 'support@amzlenders.com', // sender address
     to: args.email, // list of receivers
     subject: name + ', welcome to amzLenders!', // Title line
-    html: '<div style = "background-color : white; padding :10px; font-size : 16px; color : #000000">' +
-        '<img alt="3.jpg" src="https://amzlendersdriverslicence.s3.amazonaws.com/3.jpg" style="max-width: 100%"/>' +
+    html: '<div style = "background-color : white; padding :10px; font-size : 11px; color : #000000; font-family: Hind">' +
+        '<img alt="3.jpg" src="https://amzlendersdriverslicence.s3.amazonaws.com/3.jpg" style="width: 100%;max-width: 250px"/>' +
         '<br>'+
         '<br>'+
         '<b style="color : #000000">Hi ' + name + ',</b>' +
@@ -38,7 +38,7 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
         '<p style="text-align: center">' +
         // '<a style="text-align:center;' +
         // 'href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
-        '<a  style="margin: 0 10%; background: #91b927; font-size: 32px;line-height: 1.2em;color : #ffffff!important;padding: 7px 20px;' +
+        '<a  style="margin: 0 10%; background: #91b927; font-size: 24px;line-height: 1.1em;color : #ffffff!important;padding: 7px 20px;' +
         'border: none;text-decoration: none"' +
         ' href="' + BASE_HOST_URL + '/signup?token=' + token + '"' + '>' +
         'VERIFY EMAIL</a>' +
