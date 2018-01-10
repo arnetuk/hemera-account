@@ -342,7 +342,7 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
             var user = userfound.result[0]
             var data = {
                 email: user.email,
-                name: user.name
+                name: user.name || user.email
             }
             generateToken(user, function (err, res) {
                 if (err) return done(err, null)
