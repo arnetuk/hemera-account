@@ -236,11 +236,14 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
     }
 
     function updatePassword (args, done) {
+        console.log("token", args.token)
         let hemera = this
         let decoded = jwt.decode(args.token, {
             complete: true
         })
-        let userId = decoded.payload._id
+        console.log("decoded", decoded)
+        let userId = decoded.payload.id
+        console.log(userId)
         hemera.act({
             topic: options.store,
             cmd: 'findById',
@@ -345,10 +348,8 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
                 name: user.name || user.email
             }
             generateToken(user, function (err, res) {
-                if (err) return done(err, null)
-                data.token = res.token;
-                let token = jwt.sign(data, JWTSECRET)
-                sendResetPasswordEmail(data,  {EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET}, function (err, res) {
+
+                sendResetPasswordEmail(data, res.token, {EMAIL_KEY : options.EMAIL_KEY, EMAIL_SECRET: options.EMAIL_SECRET}, function (err, res) {
                     if (err) return done(err)
                     return done(null, res, hemera)
                 })
@@ -835,7 +836,6 @@ exports.plugin = Hp(function hemeraAccount (options, next) {
         delete args.topic
         delete args.cmd
         // generate token with expiry
-
         let params = {
             exp: moment().add(options.expiry.value, options.expiry.unit).valueOf(),
             id: args._id,

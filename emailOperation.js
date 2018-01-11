@@ -22,7 +22,7 @@ module.exports.sendVerifyEmail = function sendVerifyEmail (args, token, keys, cb
   console.log(BASE_HOST_URL)
 // setup e-mail data with unicode symbols
   let mailOptions = {
-    from: 'support@amzlenders.com', // sender address
+    from: 'amzLendersTeam@amzlenders.com', // sender address
     to: args.email, // list of receivers
     subject: name + ', welcome to amzLenders!', // Title line
     html: '<div style = "background-color : white; padding :10px; font-size : 11px; color : #000000; font-family: Hind">' +
@@ -83,7 +83,7 @@ module.exports.sendResetPasswordEmail = function (args, token,  keys, cb) {
   var name = args.name || 'Friend'
 // setup e-mail data with unicode symbols
   let mailOptions = {
-    from: 'support@amzlenders.com', // sender address
+    from: 'amzLendersTeam@amzlenders.com', // sender address
     to: args.email, // list of receivers
     subject: 'amzLenders', // Title line
     html: '<div style = "background-color : white; border:3px solid orange; padding :10px; font-size : 16px; color : black">' +
