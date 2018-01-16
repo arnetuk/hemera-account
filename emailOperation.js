@@ -85,7 +85,7 @@ module.exports.sendResetPasswordEmail = function (args, token, keys, cb) {
     let mailOptions = {
         from: 'amzLendersTeam@amzlenders.com', // sender address
         to: args.email, // list of receivers
-        subject: 'amzLenders', // Title line
+        subject: 'Reset your amzLenders password', // Title line
         html: '<div style = "background-color : white; padding :10px; font-size : 16px; color : #000000; font-family: Hind">' +
         '<img alt="3.jpg" src="https://amzlendersdriverslicence.s3.amazonaws.com/amzlenders.png" style="width: 100%;max-width: 250px"/>' +
         '<br>' +
